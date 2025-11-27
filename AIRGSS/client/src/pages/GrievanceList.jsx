@@ -16,7 +16,11 @@ const GrievanceList = () => {
                         Authorization: `Bearer ${user.token}`,
                     },
                 };
-                const { data } = await axios.get('http://localhost:5000/api/grievances/my', config);
+                let url = 'http://localhost:5000/api/grievances/my';
+                if (user.role === 'official' || user.role === 'admin') {
+                    url = 'http://localhost:5000/api/grievances';
+                }
+                const { data } = await axios.get(url, config);
                 setGrievances(data);
             } catch (error) {
                 console.error('Error fetching grievances:', error);
@@ -61,8 +65,8 @@ const GrievanceList = () => {
                                 <p className="text-gray-600 mt-2 line-clamp-2">{grievance.description}</p>
                             </div>
                             <span className={`px-3 py-1 text-xs font-medium rounded-full ${grievance.status === 'Resolved' ? 'bg-green-100 text-green-800' :
-                                    grievance.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
-                                        'bg-yellow-100 text-yellow-800'
+                                grievance.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
+                                    'bg-yellow-100 text-yellow-800'
                                 }`}>
                                 {grievance.status}
                             </span>

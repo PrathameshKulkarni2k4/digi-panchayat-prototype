@@ -19,18 +19,19 @@ const Layout = () => {
                 {/* Sidebar Header */}
                 <div className="p-6 border-b border-gray-200/50">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                            <span className="text-white font-bold text-lg">DP</span>
+                        <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200">
+                            <span className="text-white font-extrabold text-xl tracking-tight">DP</span>
                         </div>
                         <div>
-                            <h1 className="text-xl font-semibold text-gray-900">DigiPanchayat</h1>
-                            <p className="text-xs text-gray-500">AIRGSS Portal</p>
+                            <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent tracking-tight">DigiPanchayat</h1>
+                            <p className="text-[10px] font-semibold text-indigo-600 uppercase tracking-wider">AIRGSS Portal</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Navigation */}
                 <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+                    {/* Common Dashboard Link */}
                     <Link
                         to="/dashboard"
                         className="flex items-center px-4 py-3 text-gray-700 hover:bg-white/60 hover:text-primary rounded-xl transition-all duration-200 group"
@@ -40,33 +41,89 @@ const Layout = () => {
                         </div>
                         <span className="font-medium">Dashboard</span>
                     </Link>
-                    <Link
-                        to="/schemes"
-                        className="flex items-center px-4 py-3 text-gray-700 hover:bg-white/60 hover:text-primary rounded-xl transition-all duration-200 group"
-                    >
-                        <div className="w-8 h-8 rounded-lg bg-purple-100/50 flex items-center justify-center mr-3 group-hover:bg-purple-100 transition-colors">
-                            <Layers className="w-4 h-4 text-purple-600" />
-                        </div>
-                        <span className="font-medium">Schemes</span>
-                    </Link>
-                    <Link
-                        to="/applications"
-                        className="flex items-center px-4 py-3 text-gray-700 hover:bg-white/60 hover:text-primary rounded-xl transition-all duration-200 group"
-                    >
-                        <div className="w-8 h-8 rounded-lg bg-green-100/50 flex items-center justify-center mr-3 group-hover:bg-green-100 transition-colors">
-                            <FileText className="w-4 h-4 text-green-600" />
-                        </div>
-                        <span className="font-medium">My Applications</span>
-                    </Link>
-                    <Link
-                        to="/grievances"
-                        className="flex items-center px-4 py-3 text-gray-700 hover:bg-white/60 hover:text-primary rounded-xl transition-all duration-200 group"
-                    >
-                        <div className="w-8 h-8 rounded-lg bg-orange-100/50 flex items-center justify-center mr-3 group-hover:bg-orange-100 transition-colors">
-                            <ClipboardList className="w-4 h-4 text-orange-600" />
-                        </div>
-                        <span className="font-medium">Grievances</span>
-                    </Link>
+
+                    {/* Citizen Links */}
+                    {user?.role === 'citizen' && (
+                        <>
+                            <Link
+                                to="/schemes"
+                                className="flex items-center px-4 py-3 text-gray-700 hover:bg-white/60 hover:text-primary rounded-xl transition-all duration-200 group"
+                            >
+                                <div className="w-8 h-8 rounded-lg bg-purple-100/50 flex items-center justify-center mr-3 group-hover:bg-purple-100 transition-colors">
+                                    <Layers className="w-4 h-4 text-purple-600" />
+                                </div>
+                                <span className="font-medium">Schemes</span>
+                            </Link>
+                            <Link
+                                to="/applications"
+                                className="flex items-center px-4 py-3 text-gray-700 hover:bg-white/60 hover:text-primary rounded-xl transition-all duration-200 group"
+                            >
+                                <div className="w-8 h-8 rounded-lg bg-green-100/50 flex items-center justify-center mr-3 group-hover:bg-green-100 transition-colors">
+                                    <FileText className="w-4 h-4 text-green-600" />
+                                </div>
+                                <span className="font-medium">Track Applications</span>
+                            </Link>
+                            <Link
+                                to="/grievances"
+                                className="flex items-center px-4 py-3 text-gray-700 hover:bg-white/60 hover:text-primary rounded-xl transition-all duration-200 group"
+                            >
+                                <div className="w-8 h-8 rounded-lg bg-orange-100/50 flex items-center justify-center mr-3 group-hover:bg-orange-100 transition-colors">
+                                    <ClipboardList className="w-4 h-4 text-orange-600" />
+                                </div>
+                                <span className="font-medium">File Grievance</span>
+                            </Link>
+                        </>
+                    )}
+
+                    {/* Official Links */}
+                    {user?.role === 'official' && (
+                        <>
+                            <Link
+                                to="/schemes/new"
+                                className="flex items-center px-4 py-3 text-gray-700 hover:bg-white/60 hover:text-primary rounded-xl transition-all duration-200 group"
+                            >
+                                <div className="w-8 h-8 rounded-lg bg-purple-100/50 flex items-center justify-center mr-3 group-hover:bg-purple-100 transition-colors">
+                                    <Layers className="w-4 h-4 text-purple-600" />
+                                </div>
+                                <span className="font-medium">Upload Scheme</span>
+                            </Link>
+                            {/* Review Applications removed as per user request */}
+                            <Link
+                                to="/grievances"
+                                className="flex items-center px-4 py-3 text-gray-700 hover:bg-white/60 hover:text-primary rounded-xl transition-all duration-200 group"
+                            >
+                                <div className="w-8 h-8 rounded-lg bg-orange-100/50 flex items-center justify-center mr-3 group-hover:bg-orange-100 transition-colors">
+                                    <ClipboardList className="w-4 h-4 text-orange-600" />
+                                </div>
+                                <span className="font-medium">Review Grievances</span>
+                            </Link>
+                        </>
+                    )}
+
+                    {/* Admin Links */}
+                    {user?.role === 'admin' && (
+                        <>
+                            <Link
+                                to="/users"
+                                className="flex items-center px-4 py-3 text-gray-700 hover:bg-white/60 hover:text-primary rounded-xl transition-all duration-200 group"
+                            >
+                                <div className="w-8 h-8 rounded-lg bg-indigo-100/50 flex items-center justify-center mr-3 group-hover:bg-indigo-100 transition-colors">
+                                    <User className="w-4 h-4 text-indigo-600" />
+                                </div>
+                                <span className="font-medium">Manage Users</span>
+                            </Link>
+                            {/* Reusing Schemes for Admin to manage */}
+                            <Link
+                                to="/schemes"
+                                className="flex items-center px-4 py-3 text-gray-700 hover:bg-white/60 hover:text-primary rounded-xl transition-all duration-200 group"
+                            >
+                                <div className="w-8 h-8 rounded-lg bg-purple-100/50 flex items-center justify-center mr-3 group-hover:bg-purple-100 transition-colors">
+                                    <Layers className="w-4 h-4 text-purple-600" />
+                                </div>
+                                <span className="font-medium">Manage Schemes</span>
+                            </Link>
+                        </>
+                    )}
                 </nav>
 
                 {/* User Profile Section */}

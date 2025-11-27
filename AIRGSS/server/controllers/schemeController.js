@@ -17,6 +17,7 @@ const createScheme = async (req, res) => {
         eligibilityCriteria,
         benefits,
         deadline,
+        documentUrl: req.file ? req.file.path : null,
     });
 
     const createdScheme = await scheme.save();

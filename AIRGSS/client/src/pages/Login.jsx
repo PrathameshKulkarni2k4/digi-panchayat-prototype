@@ -13,7 +13,10 @@ const Login = () => {
 
     useEffect(() => {
         if (user) {
-            navigate('/dashboard');
+            if (user.role === 'citizen') navigate('/dashboard/citizen');
+            else if (user.role === 'official') navigate('/dashboard/official');
+            else if (user.role === 'admin') navigate('/dashboard/admin');
+            else navigate('/dashboard');
         }
     }, [user, navigate]);
 
