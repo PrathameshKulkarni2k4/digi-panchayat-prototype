@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+@theme {
+    /* macOS-inspired Color Palette */
+    --color-primary: #007AFF;
+    --color-primary-dark: #0051D5;
+    --color-secondary: #FF9500;
+    --color-accent: #34C759;
+    --color-purple: #AF52DE;
+    --color-pink: #FF2D55;
+
+    /* Backgrounds - Glassmorphism */
+    --color-bg-light: #F5F5F7;
+    --color-bg-glass: rgba(255, 255, 255, 0.7);
+    --color-bg-glass-dark: rgba(255, 255, 255, 0.5);
+    --color-sidebar-glass: rgba(249, 249, 251, 0.8);
+
+    /* Shadows - Soft macOS style */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+
+    /* Animations */
+    --animate-fade-in: fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --animate-slide-up: slide-up 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    --animate-scale: scale 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slide-up {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes scale {
+        from {
+            transform: scale(0.95);
+        }
+
+        to {
+            transform: scale(1);
+        }
+    }
+}
+
+body {
+    @apply bg-bg-light text-gray-900 font-sans antialiased;
+    overflow-x: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+}
+
+/* macOS-style Glassmorphism */
+.glass {
+    @apply bg-bg-glass backdrop-blur-xl border border-white/20;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.glass-dark {
+    @apply bg-bg-glass-dark backdrop-blur-2xl border border-white/30;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+/* macOS-style Buttons */
+.btn-primary {
+    @apply px-6 py-2.5 bg-primary text-white rounded-full font-medium hover:bg-primary-dark transition-all duration-300 shadow-md hover:shadow-lg active:scale-95;
+}
+
+.btn-secondary {
+    @apply px-6 py-2.5 bg-white/80 backdrop-blur-md text-primary rounded-full font-medium border border-primary/20 hover:bg-white hover:border-primary/40 transition-all duration-300 shadow-sm hover:shadow-md active:scale-95;
+}
+
+.btn-outline {
+    @apply px-6 py-2.5 border-2 border-primary/30 text-primary rounded-full font-medium bg-white/50 backdrop-blur-sm hover:bg-primary/5 hover:border-primary/50 transition-all duration-300 active:scale-95;
+}
+
+/* macOS-style Cards */
+.card {
+    @apply bg-white/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 shadow-md hover:shadow-xl transition-all duration-300;
+}
+
+.card-hover {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+}
+
+/* macOS-style Inputs */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+    @apply bg-white/90 backdrop-blur-sm border border-gray-200/80 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all duration-200 placeholder:text-gray-400;
+}
+
+/* Smooth Scrollbar - macOS style */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* macOS-style Status Badges */
+.badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm;
+}
+
+.badge-success {
+    @apply bg-green-100/80 text-green-700 border border-green-200/50;
+}
+
+.badge-warning {
+    @apply bg-yellow-100/80 text-yellow-700 border border-yellow-200/50;
+}
+
+.badge-error {
+    @apply bg-red-100/80 text-red-700 border border-red-200/50;
+}
+
+.badge-info {
+    @apply bg-blue-100/80 text-blue-700 border border-blue-200/50;
+}
+
+/* macOS-style Sidebar */
+.sidebar {
+    @apply bg-sidebar-glass backdrop-blur-2xl border-r border-gray-200/50;
+}
+
+/* Smooth transitions for all interactive elements */
+a,
+button {
+    @apply transition-all duration-200;
+}
+
+/* macOS-style focus rings */
+*:focus-visible {
+    @apply outline-none ring-2 ring-primary/50 ring-offset-2;
+}
