@@ -5,28 +5,49 @@ const Scheme = require('../models/Scheme');
 // @route   POST /api/applications
 // @access  Private
 const applyForScheme = async (req, res) => {
-    const { scheme, submittedData } = req.body;
+    try {
+        console.log('Apply Scheme Request Body:', req.body);
+        console.log('Apply Scheme Request Files:', req.files);
 
-    if (!scheme) {
-        res.status(400).json({ message: 'Scheme ID is required' });
-        return;
+        let { scheme, submittedData } = req.body;
+
+        if (!scheme) {
+            res.status(400).json({ message: 'Scheme ID is required' });
+            return;
+        }
+
+        // Check if scheme exists
+        const schemeExists = await Scheme.findById(scheme);
+        if (!schemeExists) {
+            res.status(404).json({ message: 'Scheme not found' });
+            return;
+        }
+
+        const documents = req.files ? req.files.map((file) => file.path) : [];
+
+        // Parse submittedData if it's a string (from FormData)
+        if (typeof submittedData === 'string') {
+            try {
+                submittedData = JSON.parse(submittedData);
+            } catch (error) {
+                console.error('Error parsing submittedData:', error);
+                // submittedData remains as string or handle error
+            }
+        }
+
+        const application = new Application({
+            user: req.user._id,
+            scheme,
+            submittedData,
+            documents,
+        });
+
+        const createdApplication = await application.save();
+        res.status(201).json(createdApplication);
+    } catch (error) {
+        console.error('Error in applyForScheme:', error);
+        res.status(500).json({ message: 'Server Error', error: error.message });
     }
-
-    // Check if scheme exists
-    const schemeExists = await Scheme.findById(scheme);
-    if (!schemeExists) {
-        res.status(404).json({ message: 'Scheme not found' });
-        return;
-    }
-
-    const application = new Application({
-        user: req.user._id,
-        scheme,
-        submittedData,
-    });
-
-    const createdApplication = await application.save();
-    res.status(201).json(createdApplication);
 };
 
 // @desc    Get logged in user applications

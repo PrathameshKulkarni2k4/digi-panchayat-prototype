@@ -9,6 +9,7 @@ const SchemeDetails = () => {
     const [loading, setLoading] = useState(true);
     const [applying, setApplying] = useState(false);
     const [applicationData, setApplicationData] = useState({});
+    const [documents, setDocuments] = useState([]);
     const { id } = useParams();
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -34,14 +35,29 @@ const SchemeDetails = () => {
         try {
             const config = {
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${user.token}`,
                 },
             };
 
+            const formData = new FormData();
+            formData.append('scheme', id);
+            // formData.append('submittedData', JSON.stringify(applicationData)); // If backend expects map, might need loop or JSON parsing on backend. 
+            // Checking Application model: submittedData is Map of String. 
+            // Checking applicationController: const { scheme, submittedData } = req.body;
+            // If using multer, req.body will be populated. But if submittedData is object, it might be [object Object].
+            // Let's append individual fields of submittedData if any, or send as JSON string and parse in backend if needed.
+            // For now, let's assume simple key-values or just notes.
+            // Send submittedData as JSON string
+            formData.append('submittedData', JSON.stringify(applicationData));
+
+            for (let i = 0; i < documents.length; i++) {
+                formData.append('documents', documents[i]);
+            }
+
             await axios.post(
                 'http://localhost:5000/api/applications',
-                { scheme: id, submittedData: applicationData },
+                formData,
                 config
             );
 
@@ -160,30 +176,45 @@ const SchemeDetails = () => {
                     </div>
                 )}
 
-                <div className="border-t border-gray-100 pt-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Apply for this Scheme</h3>
-                    <form onSubmit={handleApply} className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Additional Information (Optional)
-                            </label>
-                            <textarea
-                                rows="4"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                placeholder="Any additional information you'd like to provide..."
-                                onChange={(e) => setApplicationData({ ...applicationData, notes: e.target.value })}
-                            ></textarea>
-                        </div>
+                {user?.role === 'citizen' && (
+                    <div className="border-t border-gray-100 pt-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Apply for this Scheme</h3>
+                        <form onSubmit={handleApply} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Additional Information (Optional)
+                                </label>
+                                <textarea
+                                    rows="4"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                    placeholder="Any additional information you'd like to provide..."
+                                    onChange={(e) => setApplicationData({ ...applicationData, notes: e.target.value })}
+                                ></textarea>
+                            </div>
 
-                        <button
-                            type="submit"
-                            disabled={applying}
-                            className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium shadow-lg disabled:opacity-50 transition-colors"
-                        >
-                            {applying ? 'Submitting Application...' : 'Submit Application'}
-                        </button>
-                    </form>
-                </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Upload Documents
+                                </label>
+                                <input
+                                    type="file"
+                                    multiple
+                                    onChange={(e) => setDocuments(e.target.files)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Upload relevant documents (ID proof, Income certificate, etc.)</p>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={applying}
+                                className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium shadow-lg disabled:opacity-50 transition-colors"
+                            >
+                                {applying ? 'Submitting Application...' : 'Submit Application'}
+                            </button>
+                        </form>
+                    </div>
+                )}
             </div>
         </div>
     );

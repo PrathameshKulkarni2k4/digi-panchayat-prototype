@@ -87,6 +87,15 @@ const Layout = () => {
                                 </div>
                                 <span className="font-medium">Upload Scheme</span>
                             </Link>
+                            <Link
+                                to="/schemes"
+                                className="flex items-center px-4 py-3 text-gray-700 hover:bg-white/60 hover:text-primary rounded-xl transition-all duration-200 group"
+                            >
+                                <div className="w-8 h-8 rounded-lg bg-purple-100/50 flex items-center justify-center mr-3 group-hover:bg-purple-100 transition-colors">
+                                    <Layers className="w-4 h-4 text-purple-600" />
+                                </div>
+                                <span className="font-medium">View Schemes</span>
+                            </Link>
                             {/* Review Applications removed as per user request */}
                             <Link
                                 to="/grievances"

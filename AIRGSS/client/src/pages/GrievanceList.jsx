@@ -32,6 +32,24 @@ const GrievanceList = () => {
         }
     }, [user]);
 
+    const handleReview = async (id) => {
+        try {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            };
+            const { data } = await axios.put(`http://localhost:5000/api/grievances/${id}/review`, {}, config);
+
+            // Update local state
+            setGrievances(grievances.map(g => g._id === id ? data : g));
+            alert(`Grievance Reviewed! Ticket ID: ${data.ticketId}\nCategory: ${data.category}\nDepartment: ${data.department}`);
+        } catch (error) {
+            console.error('Error reviewing grievance:', error);
+            alert('Failed to review grievance');
+        }
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -72,9 +90,27 @@ const GrievanceList = () => {
                             </span>
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-50 flex justify-between items-center text-xs text-gray-500">
-                            <span>ID: {grievance._id.substring(0, 8)}</span>
+                            <span>ID: {grievance.ticketId || grievance._id.substring(0, 8)}</span>
                             <span>{new Date(grievance.createdAt).toLocaleDateString()}</span>
                         </div>
+
+                        {(user.role === 'official' || user.role === 'admin') && !grievance.ticketId && (
+                            <div className="mt-4">
+                                <button
+                                    onClick={() => handleReview(grievance._id)}
+                                    className="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
+                                >
+                                    AI Review & Assign
+                                </button>
+                            </div>
+                        )}
+
+                        {(user.role === 'official' || user.role === 'admin') && grievance.ticketId && (
+                            <div className="mt-2 text-sm text-gray-600 bg-gray-50 p-2 rounded">
+                                <p><strong>Category:</strong> {grievance.category}</p>
+                                <p><strong>Dept:</strong> {grievance.department}</p>
+                            </div>
+                        )}
                     </div>
                 ))}
                 {grievances.length === 0 && (

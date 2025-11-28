@@ -20,6 +20,11 @@ const applicationSchema = mongoose.Schema({
         type: Map,
         of: String,
     },
+    documents: [
+        {
+            type: String, // URL/Path to the file
+        },
+    ],
 }, {
     timestamps: true,
 });

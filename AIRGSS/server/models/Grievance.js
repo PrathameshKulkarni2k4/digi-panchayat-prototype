@@ -21,7 +21,15 @@ const grievanceSchema = mongoose.Schema({
     },
     category: {
         type: String,
-        required: true,
+        // required: true, // Removed required
+    },
+    department: {
+        type: String,
+    },
+    ticketId: {
+        type: String,
+        unique: true,
+        sparse: true, // Allow null/undefined to not conflict
     },
     attachments: [
         {

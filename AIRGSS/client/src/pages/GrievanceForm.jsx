@@ -6,7 +6,6 @@ import AuthContext from '../context/AuthContext';
 const GrievanceForm = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [category, setCategory] = useState('General');
     const [loading, setLoading] = useState(false);
 
     const { user } = useContext(AuthContext);
@@ -25,7 +24,7 @@ const GrievanceForm = () => {
 
             await axios.post(
                 'http://localhost:5000/api/grievances',
-                { title, description, category },
+                { title, description },
                 config
             );
             navigate('/grievances');
@@ -54,20 +53,7 @@ const GrievanceForm = () => {
                         />
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                        <select
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                        >
-                            <option value="General">General</option>
-                            <option value="Water">Water Supply</option>
-                            <option value="Electricity">Electricity</option>
-                            <option value="Roads">Roads & Infrastructure</option>
-                            <option value="Sanitation">Sanitation</option>
-                        </select>
-                    </div>
+
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>

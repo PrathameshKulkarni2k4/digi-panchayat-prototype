@@ -40,17 +40,24 @@ const ApplicationForm = () => {
         try {
             const config = {
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${user.token}`,
                 },
             };
 
+            const formDataToSend = new FormData();
+            formDataToSend.append('scheme', formData.schemeId);
+            formDataToSend.append('submittedData', JSON.stringify({ notes: formData.notes }));
+
+            if (formData.documents) {
+                for (let i = 0; i < formData.documents.length; i++) {
+                    formDataToSend.append('documents', formData.documents[i]);
+                }
+            }
+
             await axios.post(
                 'http://localhost:5000/api/applications',
-                {
-                    scheme: formData.schemeId,
-                    submittedData: { notes: formData.notes },
-                },
+                formDataToSend,
                 config
             );
 
@@ -119,12 +126,31 @@ const ApplicationForm = () => {
                         ></textarea>
                     </div>
 
-                    {/* Placeholder for File Upload */}
-                    <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center">
-                        <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-500">
-                            Document upload coming soon
-                        </p>
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            Upload Documents
+                        </label>
+                        <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-blue-500 transition-colors">
+                            <input
+                                type="file"
+                                name="documents"
+                                multiple
+                                onChange={(e) => setFormData({ ...formData, documents: e.target.files })}
+                                className="hidden"
+                                id="file-upload"
+                            />
+                            <label htmlFor="file-upload" className="cursor-pointer">
+                                <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                                <p className="text-sm text-gray-500">
+                                    Click to upload documents (PDF, DOC, DOCX)
+                                </p>
+                                {formData.documents && formData.documents.length > 0 && (
+                                    <p className="text-sm text-blue-600 mt-2">
+                                        {formData.documents.length} file(s) selected
+                                    </p>
+                                )}
+                            </label>
+                        </div>
                     </div>
 
                     <button
