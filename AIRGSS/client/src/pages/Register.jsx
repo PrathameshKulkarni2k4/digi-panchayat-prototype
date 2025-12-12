@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
-import { UserPlus, Sparkles } from 'lucide-react';
+import { UserPlus, Sparkles, Check, X } from 'lucide-react';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -17,7 +17,7 @@ const Register = () => {
         occupation: '',
     });
 
-    const [error, setError] = useState('');
+    const [errors, setErrors] = useState({});
     const { register, user } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -29,32 +29,72 @@ const Register = () => {
         }
     }, [user, navigate]);
 
+    const validateEmail = (email) => {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    };
+
+    const validatePhone = (phone) => {
+        const re = /^[6-9]\d{9}$/; // Indian mobile number validation
+        return re.test(phone);
+    };
+
+    const validatePassword = (password) => {
+        // Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
+        const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        return re.test(password);
+    };
+
     const onChange = (e) => {
         setFormData((prevState) => ({
             ...prevState,
             [e.target.name]: e.target.value,
         }));
+        // Clear error when user starts typing
+        if (errors[e.target.name]) {
+            setErrors(prev => ({ ...prev, [e.target.name]: '' }));
+        }
     };
 
     const submitHandler = async (e) => {
         e.preventDefault();
+        const newErrors = {};
+
+        if (!validateEmail(email)) {
+            newErrors.email = 'Please enter a valid email address';
+        }
+
+        if (phone && !validatePhone(phone)) {
+            newErrors.phone = 'Please enter a valid 10-digit Indian mobile number';
+        }
+
+        if (!validatePassword(password)) {
+            newErrors.password = 'Password must be at least 8 characters, include uppercase, lowercase, number, and special character';
+        }
+
         if (password !== confirmPassword) {
-            setError('Passwords do not match');
-        } else {
-            const result = await register({
-                name,
-                email,
-                password,
-                role,
-                phone,
-                age,
-                gender,
-                income,
-                occupation,
-            });
-            if (!result.success) {
-                setError(result.message);
-            }
+            newErrors.confirmPassword = 'Passwords do not match';
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+
+        const result = await register({
+            name,
+            email,
+            password,
+            role,
+            phone,
+            age,
+            gender,
+            income,
+            occupation,
+        });
+
+        if (!result.success) {
+            setErrors({ form: result.message });
         }
     };
 
@@ -70,9 +110,9 @@ const Register = () => {
                         <p className="text-gray-600">Join DigiPanchayat today</p>
                     </div>
 
-                    {error && (
+                    {errors.form && (
                         <div className="mb-6 p-4 bg-red-50/80 backdrop-blur-sm border border-red-200/50 rounded-xl">
-                            <p className="text-sm text-red-700">{error}</p>
+                            <p className="text-sm text-red-700">{errors.form}</p>
                         </div>
                     )}
 
@@ -86,7 +126,7 @@ const Register = () => {
                                     value={name}
                                     onChange={onChange}
                                     required
-                                    className="w-full"
+                                    className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                     placeholder="John Doe"
                                 />
                             </div>
@@ -98,9 +138,10 @@ const Register = () => {
                                     value={email}
                                     onChange={onChange}
                                     required
-                                    className="w-full"
+                                    className={`w-full px-4 py-2 rounded-xl border ${errors.email ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
                                     placeholder="you@example.com"
                                 />
+                                {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
@@ -110,9 +151,10 @@ const Register = () => {
                                     value={password}
                                     onChange={onChange}
                                     required
-                                    className="w-full"
+                                    className={`w-full px-4 py-2 rounded-xl border ${errors.password ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
                                     placeholder="••••••••"
                                 />
+                                {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password}</p>}
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">Confirm Password</label>
@@ -122,13 +164,14 @@ const Register = () => {
                                     value={confirmPassword}
                                     onChange={onChange}
                                     required
-                                    className="w-full"
+                                    className={`w-full px-4 py-2 rounded-xl border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
                                     placeholder="••••••••"
                                 />
+                                {errors.confirmPassword && <p className="text-xs text-red-500 mt-1">{errors.confirmPassword}</p>}
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">Role</label>
-                                <select name="role" value={role} onChange={onChange} className="w-full">
+                                <select name="role" value={role} onChange={onChange} className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                                     <option value="citizen">Citizen</option>
                                     <option value="official">Official</option>
                                     <option value="admin">Admin</option>
@@ -141,9 +184,10 @@ const Register = () => {
                                     name="phone"
                                     value={phone}
                                     onChange={onChange}
-                                    className="w-full"
-                                    placeholder="+91 98765 43210"
+                                    className={`w-full px-4 py-2 rounded-xl border ${errors.phone ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
+                                    placeholder="9876543210"
                                 />
+                                {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">Age</label>
@@ -152,13 +196,13 @@ const Register = () => {
                                     name="age"
                                     value={age}
                                     onChange={onChange}
-                                    className="w-full"
+                                    className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                     placeholder="25"
                                 />
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">Gender</label>
-                                <select name="gender" value={gender} onChange={onChange} className="w-full">
+                                <select name="gender" value={gender} onChange={onChange} className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                                     <option value="">Select Gender</option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
@@ -172,7 +216,7 @@ const Register = () => {
                                     name="income"
                                     value={income}
                                     onChange={onChange}
-                                    className="w-full"
+                                    className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                     placeholder="300000"
                                 />
                             </div>
@@ -183,7 +227,7 @@ const Register = () => {
                                     name="occupation"
                                     value={occupation}
                                     onChange={onChange}
-                                    className="w-full"
+                                    className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                     placeholder="Farmer"
                                 />
                             </div>

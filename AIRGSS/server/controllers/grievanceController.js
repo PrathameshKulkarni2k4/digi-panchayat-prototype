@@ -1,26 +1,56 @@
 const Grievance = require('../models/Grievance');
+const { classifyGrievance } = require('../utils/grievanceClassifier');
 
 // @desc    Create a new grievance
 // @route   POST /api/grievances
 // @access  Private
 const createGrievance = async (req, res) => {
-    const { title, description, category, attachments } = req.body;
+    const { title, description, attachments } = req.body;
 
-    if (!title || !description || !category) {
+    if (!title || !description) {
         res.status(400).json({ message: 'Please fill in all fields' });
         return;
     }
+
+    // Classification is now done by officer review
+    // const { category, department } = classifyGrievance(`${title} ${description}`);
 
     const grievance = new Grievance({
         user: req.user._id,
         title,
         description,
-        category,
+        // category,
+        // department,
         attachments,
     });
 
     const createdGrievance = await grievance.save();
     res.status(201).json(createdGrievance);
+};
+
+// @desc    Review and categorize grievance (AI)
+// @route   PUT /api/grievances/:id/review
+// @access  Private/Official
+const reviewGrievance = async (req, res) => {
+    const grievance = await Grievance.findById(req.params.id);
+
+    if (grievance) {
+        const { category, department } = classifyGrievance(`${grievance.title} ${grievance.description}`);
+
+        grievance.category = category;
+        grievance.department = department;
+        grievance.status = 'In Progress';
+
+        // Generate Ticket ID if not exists
+        if (!grievance.ticketId) {
+            grievance.ticketId = `GRV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        }
+
+        const updatedGrievance = await grievance.save();
+        res.json(updatedGrievance);
+    } else {
+        res.status(404).json({ message: 'Grievance not found' });
+    }
 };
 
 // @desc    Get all grievances
@@ -75,4 +105,5 @@ module.exports = {
     getMyGrievances,
     getGrievanceById,
     updateGrievanceStatus,
+    reviewGrievance,
 };

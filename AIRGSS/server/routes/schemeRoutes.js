@@ -7,9 +7,10 @@ const {
     updateScheme,
     deleteScheme,
 } = require('../controllers/schemeController');
-const { protect, admin } = require('../middleware/authMiddleware');
+const { protect, admin, official } = require('../middleware/authMiddleware');
+const upload = require('../middleware/uploadMiddleware');
 
-router.route('/').post(protect, admin, createScheme).get(getSchemes);
+router.route('/').post(protect, official, upload.single('document'), createScheme).get(getSchemes);
 router.route('/:id')
     .get(getSchemeById)
     .put(protect, admin, updateScheme)

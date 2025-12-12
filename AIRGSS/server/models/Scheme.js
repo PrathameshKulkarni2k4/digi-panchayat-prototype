@@ -24,6 +24,9 @@ const schemeSchema = mongoose.Schema({
         type: Date,
         required: true,
     },
+    documentUrl: {
+        type: String,
+    },
 }, {
     timestamps: true,
 });
